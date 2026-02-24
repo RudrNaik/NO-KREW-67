@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<AssemblyName>GrowlerFrit</AssemblyName>
+		<Product>KR-EW 67</Product>
+		<Version>0.0.1</Version>
+		<LangVersion>latest</LangVersion>
+		<RestoreAdditionalProjectSources>
+			https://api.nuget.org/v3/index.json;
+			https://nuget.bepinex.dev/v3/index.json
+		</RestoreAdditionalProjectSources>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="BepInEx.Core" Version="5.*" />
+		<PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+		<PackageReference Include="UnityEngine.Modules" Version="2022.3" IncludeAssets="compile" />
+	</ItemGroup>
+
+	<!-- Game Location -->
+	<PropertyGroup>
+		<GameDir>C:\Program Files (x86)\Steam\steamapps\common\Nuclear Option</GameDir>
+		<BepInExPluginsDir>$(GameDir)\BepInEx\plugins\</BepInExPluginsDir>
+	</PropertyGroup>
+
+	<!-- Auto-copy to game folder after build -->
+	<Target Name="CopyToGame" AfterTargets="Build">
+		<MakeDir Directories="$(BepInExPluginsDir)" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFiles="$(BepInExPluginsDir)$(Product).dll" SkipUnchangedFiles="true" />
+	</Target>
+
+	<!-- Assembly-Csharp DLL references -->
+	<ItemGroup>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(GameDir)\NuclearOption_Data\Managed\Assembly-CSharp.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+</Project>
