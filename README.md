@@ -13,7 +13,7 @@ This mod alters the ifrit such that you can use it as an electronic warfare plat
 1. Download BepInEx and have it set up in your Nuclear Option directory
 2. Download the .dll File and place it in the plugins folder within the BepInEx directory.
 3. Check the LogOutput.Log file to see if it has loaded correctly.
-4. Lase anything and everything.
+4. Be the bane of any and every radar platform in the game.
 
 # Notes 
 If there are any issues with the mod, please contact me on discord (@spinypine) with a copy of your LogOutput.Log file.
