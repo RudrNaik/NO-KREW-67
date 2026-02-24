@@ -1,1 +1,19 @@
 # NO-KREW-67
+
+This mod alters the ifrit such that you can use it as an electronic warfare platform. This adds Radar jammer pods to the internal bays (both forward and back) and then also a 2x ARAD mount to the outer wing as the inner wing would clip with the airbrake.
+
+> **MpMode** | This is tied to a multiplayer blocker thats built in. When you set it to **MpDisabled**- it allows you to play with the mod active while solo, but when you join a lobby or host with others- it will disable. However- when set to **RestrictedMM** you no longer can join games in the server browser, but can host a game with the mod active at the caveat that whomeever else wants to join **needs** to have the mod installed as well. **Note**: At the moment the MpMode does not work as the Mp blocker isnt involved. This will be fixed on release.
+
+# Requirements
+- Nuclear Option via Steam
+- BepInEx
+- Optional: Nuclear Option Mod Manager (NOMM)
+
+# Installation
+1. Download BepInEx and have it set up in your Nuclear Option directory
+2. Download the .dll File and place it in the plugins folder within the BepInEx directory.
+3. Check the LogOutput.Log file to see if it has loaded correctly.
+4. Lase anything and everything.
+
+# Notes 
+If there are any issues with the mod, please contact me on discord (@spinypine) with a copy of your LogOutput.Log file.
