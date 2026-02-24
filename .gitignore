@@ -1,0 +1,10 @@
+.vs/
+bin/
+obj/
+*.pdb
+*.user
+*.suo
+.vs/
+BepInEx/
+decompiled/
+decompiled qol/
