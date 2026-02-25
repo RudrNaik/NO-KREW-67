@@ -97,13 +97,6 @@ namespace GrowlerFrit
             Log.LogInfo($"[GrowlerFrit] Added {mount.jsonKey} to '{set.name}'");
         }
 
-        internal static void RemoveOption(HardpointSet set, WeaponMount mount)
-        {
-            if (set == null || mount == null) return;
-            if (set.weaponOptions.Remove(mount))
-                Log.LogInfo($"[GrowlerFrit] Removed {mount.jsonKey} from '{set.name}'");
-        }
-
         internal static void InjectIntoWeaponManager(WeaponManager wm, Encyclopedia enc)
         {
             if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
@@ -114,15 +107,6 @@ namespace GrowlerFrit
             AddOption(wm.hardpointSets[1], jammer);     // Forward Weapon Bay
             AddOption(wm.hardpointSets[2], jammer);     // Rear Weapon Bay
             AddOption(wm.hardpointSets[5], aradDouble); // Outer Wing Pylons
-        }
-
-        internal static void RemoveFromWeaponManager(WeaponManager wm, Encyclopedia enc)
-        {
-            if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
-            var (jammer, aradDouble) = FindMounts(enc);
-            RemoveOption(wm.hardpointSets[1], jammer);
-            RemoveOption(wm.hardpointSets[2], jammer);
-            RemoveOption(wm.hardpointSets[5], aradDouble);
         }
 
         internal static bool IsTargetAircraft(AircraftDefinition def)
@@ -157,7 +141,7 @@ namespace GrowlerFrit
         //Injects into the weapon manager such that we can use the weapons. Uses ismultiplayer() from the MpBlocker to ensure that you can't use it in MP unless on MpRestricted mode. 
         public class VetLoadoutPatch
         {
-            public static void Prefix(AircraftDefinition definition, Loadout loadout)
+            public static void Prefix(AircraftDefinition definition)
             {
                 try
                 {
