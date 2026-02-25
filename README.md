@@ -2,7 +2,7 @@
 
 This mod alters the ifrit such that you can use it as an electronic warfare platform. This adds Radar jammer pods to the internal bays (both forward and back) and then also a 2x ARAD mount to the outer wing as the inner wing would clip with the airbrake.
 
-> **MpMode** | This is tied to a multiplayer blocker thats built in. When you set it to **MpDisabled**- it allows you to play with the mod active while solo, but when you join a lobby or host with others- it will disable. However- when set to **RestrictedMM** you no longer can join games in the server browser, but can host a game with the mod active at the caveat that whomeever else wants to join **needs** to have the mod installed as well. **Note**: At the moment the MpMode does not work as the Mp blocker isnt involved. This will be fixed on release.
+> **MpMode** | This is tied to a multiplayer blocker thats built in. When you set it to **MpDisabled**- it allows you to play with the mod active while solo, but when you join a lobby or host with others- it will disable. However- when set to **RestrictedMM** you no longer can join games in the server browser, but can host a game with the mod active at the caveat that whomeever else wants to join **needs** to have the mod installed as well.
 
 # Requirements
 - Nuclear Option via Steam
