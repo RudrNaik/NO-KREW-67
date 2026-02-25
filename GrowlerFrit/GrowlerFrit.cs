@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using MpBlocker;
+using NuclearOption.SavedMission;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -17,7 +18,8 @@ namespace GrowlerFrit
         internal static ConfigEntry<MultiplayerMode> MpMode;
 
         private const string TargetAircraftName = "Multirole1";
-        
+        private const string JammerKey = "JammingPod1";
+        private const string AradDoubleKey = "ARM1_double";
 
         private void Awake()
         {
@@ -30,28 +32,31 @@ namespace GrowlerFrit
                 MultiplayerMode.MpDisabled,
                 "MpDisabled: mod only active in singleplayer. RestrictedMM: mod active in MP with version matching."
             );
-
             Plugin.setEnum(MpMode.Value);
             MpMode.SettingChanged += (sender, args) => Plugin.setEnum(MpMode.Value);
 
             Harmony harmony = new Harmony("com.Spiny.GrowlerFrit");
-            Log.LogMessage("GrowlerFrit loading...");
+            Log.LogMessage("GrowlerFrit patching...");
 
-            // prefix on Encyclopedia.AfterLoad — runs before IndexLookup is built
-            // This is where we inject into the prefab's WeaponManager
+            
             TryPatch(harmony,
-                typeof(Encyclopedia).GetMethod("AfterLoad",
-                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                    null, Type.EmptyTypes, null),
-                typeof(EncyclopediaPrefabInjectPatch), "Prefix",
-                "Encyclopedia.AfterLoad (PREFIX)",
+                typeof(WeaponSelector).GetMethod("PopulateOptions",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public),
+                typeof(WeaponSelectorPopulatePatch), "Prefix",
+                "WeaponSelector.PopulateOptions (PREFIX)",
+                prefix: true);
+
+           
+            TryPatch(harmony,
+                typeof(WeaponChecker).GetMethod("VetLoadout",
+                    BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public),
+                typeof(VetLoadoutPatch), "Prefix",
+                "WeaponChecker.VetLoadout (PREFIX)",
                 prefix: true);
 
             Log.LogInfo("GrowlerFrit loaded.");
         }
 
-        //Individual patching method as some methods don't work with PatchAll().
-        //Don't know why harmony is like this, but it just is.
         private void TryPatch(Harmony harmony, MethodInfo method, Type patchClass,
             string patchMethod, string label, bool prefix = false)
         {
@@ -70,7 +75,6 @@ namespace GrowlerFrit
             catch (Exception e) { Log.LogError($"Failed to patch {label}: {e}"); }
         }
 
-        // Finds jammer and ARAD mounts from the encyclopedia
         internal static (WeaponMount jammer, WeaponMount aradDouble) FindMounts(Encyclopedia enc)
         {
             WeaponMount jammer = null, aradDouble = null;
@@ -78,24 +82,28 @@ namespace GrowlerFrit
             foreach (var mount in enc.weaponMounts)
             {
                 if (mount == null) continue;
-                if (mount.jsonKey == "JammingPod1") jammer = mount;
-                if (mount.jsonKey == "ARM1_double") aradDouble = mount;
+                if (mount.jsonKey == JammerKey) jammer = mount;
+                if (mount.jsonKey == AradDoubleKey) aradDouble = mount;
             }
             return (jammer, aradDouble);
         }
 
-        // Adds a mount to a hardpoint set's weaponOptions if not already present
         internal static void AddOption(HardpointSet set, WeaponMount mount)
         {
             if (set == null || mount == null) return;
-            foreach (var o in set.weaponOptions) { 
+            foreach (var o in set.weaponOptions)
                 if (o != null && o.jsonKey == mount.jsonKey) return;
-            }
             set.weaponOptions.Add(mount);
-            Log.LogInfo($"[GrowlerFrit] Added {mount.jsonKey} to hardpointSet '{set.name}'");
+            Log.LogInfo($"[GrowlerFrit] Added {mount.jsonKey} to '{set.name}'");
         }
 
-        // Injects weapons into the correct hardpoint sets on a WeaponManager
+        internal static void RemoveOption(HardpointSet set, WeaponMount mount)
+        {
+            if (set == null || mount == null) return;
+            if (set.weaponOptions.Remove(mount))
+                Log.LogInfo($"[GrowlerFrit] Removed {mount.jsonKey} from '{set.name}'");
+        }
+
         internal static void InjectIntoWeaponManager(WeaponManager wm, Encyclopedia enc)
         {
             if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
@@ -103,10 +111,18 @@ namespace GrowlerFrit
             if (jammer == null) Log.LogWarning("[GrowlerFrit] Could not find JammingPod1!");
             if (aradDouble == null) Log.LogWarning("[GrowlerFrit] Could not find ARM1_double!");
 
-            AddOption(wm.hardpointSets[1], jammer);      // Forward Weapon Bay
-            AddOption(wm.hardpointSets[2], jammer);      // Rear Weapon Bay
-            //AddOption(wm.hardpointSets[4], aradDouble);  // Inner Wing Pylons (removed as it causes clipping with the airbrake)
-            AddOption(wm.hardpointSets[5], aradDouble);  // Outer Wing Pylons
+            AddOption(wm.hardpointSets[1], jammer);     // Forward Weapon Bay
+            AddOption(wm.hardpointSets[2], jammer);     // Rear Weapon Bay
+            AddOption(wm.hardpointSets[5], aradDouble); // Outer Wing Pylons
+        }
+
+        internal static void RemoveFromWeaponManager(WeaponManager wm, Encyclopedia enc)
+        {
+            if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
+            var (jammer, aradDouble) = FindMounts(enc);
+            RemoveOption(wm.hardpointSets[1], jammer);
+            RemoveOption(wm.hardpointSets[2], jammer);
+            RemoveOption(wm.hardpointSets[5], aradDouble);
         }
 
         internal static bool IsTargetAircraft(AircraftDefinition def)
@@ -115,43 +131,46 @@ namespace GrowlerFrit
                    def.name.IndexOf(TargetAircraftName, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        
-        // Injects into the Encyclopedia's prefab WeaponManager so the weapons are accessible to you.
-        public class EncyclopediaPrefabInjectPatch
+        // Injects the selected weapons onto the selected hardpoints on an aircraft.
+        public class WeaponSelectorPopulatePatch
         {
-            public static void Prefix(Encyclopedia __instance)
+            public static void Prefix(HardpointSet hardpointSet)
             {
                 try
                 {
-                    //Log.LogInfo("Running Encyclopedia.AfterLoad Prefix");
+                    if (Plugin.IsMultiplayer()) return;
+                    if (Encyclopedia.i == null) return;
 
-                    // Find the Ifrit definition
-                    AircraftDefinition ifrit = null;
-                    foreach (var def in __instance.aircraft)
-                    {
-                        if (IsTargetAircraft(def)) { 
-                            ifrit = def; 
-                            break; 
-                        }
-                    }
-                    if (ifrit == null) { 
-                        Log.LogError("Could not find Ifrit definition."); 
-                        return; 
-                    }
+                    var (jammer, aradDouble) = FindMounts(Encyclopedia.i);
 
-                    // Get the WeaponManager from the prefab itself
-                    var wm = ifrit.unitPrefab?.GetComponentInChildren<WeaponManager>();
-                    if (wm == null) {
-                        Log.LogError("Could not find WeaponManager on Ifrit prefab."); 
-                        return; 
-                    }
-
-                    InjectIntoWeaponManager(wm, __instance);
-                    //Log.LogInfo("Injected weapons into Ifrit prefab WeaponManager.");
+                    if (hardpointSet.name == "Forward Weapon Bay")
+                        AddOption(hardpointSet, jammer);
+                    else if (hardpointSet.name == "Rear Weapon Bay")
+                        AddOption(hardpointSet, jammer);
+                    else if (hardpointSet.name == "Outer Wing Pylons")
+                        AddOption(hardpointSet, aradDouble);
                 }
-                catch (Exception e) { 
-                    Log.LogError("EncyclopediaPrefabInjectPatch failed: " + e); 
+                catch (Exception e) { Log.LogError("[GrowlerFrit] WeaponSelectorPopulatePatch failed: " + e); }
+            }
+        }
+
+        //Injects into the weapon manager such that we can use the weapons. Uses ismultiplayer() from the MpBlocker to ensure that you can't use it in MP unless on MpRestricted mode. 
+        public class VetLoadoutPatch
+        {
+            public static void Prefix(AircraftDefinition definition, Loadout loadout)
+            {
+                try
+                {
+                    if (!IsTargetAircraft(definition)) return;
+                    if (Plugin.IsMultiplayer()) return;
+
+                    var wm = definition.unitPrefab?.GetComponentInChildren<WeaponManager>();
+                    if (wm == null) return;
+
+                    InjectIntoWeaponManager(wm, Encyclopedia.i);
+                    Log.LogInfo("[GrowlerFrit] VetLoadout: injected into prefab for spawn validation.");
                 }
+                catch (Exception e) { Log.LogError("[GrowlerFrit] VetLoadoutPatch failed: " + e); }
             }
         }
     }
