@@ -2,7 +2,6 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
-using MpBlocker;
 using NuclearOption.SavedMission;
 using System;
 using System.Reflection;
@@ -10,15 +9,15 @@ using UnityEngine;
 
 namespace GrowlerFrit
 {
-    [BepInPlugin("com.Spiny.GrowlerFrit", "GrowlerIfrit", "0.0.1")]
+    [BepInPlugin("com.Spiny.GrowlerFrit", "GrowlerIfrit", "0.0.2")]
     [BepInDependency("com.Spiny.MpBlocker")]
+    [BepInDependency("com.Spiny.JammerPod2")]
     public class GrowlerFrit : BaseUnityPlugin
     {
         internal static ManualLogSource Log;
-        internal static ConfigEntry<MultiplayerMode> MpMode;
+        internal static ConfigEntry<MpBlocker.MultiplayerMode> MpMode;
 
         private const string TargetAircraftName = "Multirole1";
-        private const string JammerKey = "JammingPod1";
         private const string AradDoubleKey = "ARM1_double";
 
         private void Awake()
@@ -29,7 +28,7 @@ namespace GrowlerFrit
             MpMode = Config.Bind(
                 "Multiplayer",
                 "MultiplayerMode",
-                MultiplayerMode.MpDisabled,
+                MpBlocker.MultiplayerMode.MpDisabled,
                 "MpDisabled: mod only active in singleplayer. RestrictedMM: mod active in MP with version matching."
             );
 
@@ -39,7 +38,6 @@ namespace GrowlerFrit
             Harmony harmony = new("com.Spiny.GrowlerFrit");
             Log.LogMessage("GrowlerFrit patching...");
 
-            
             TryPatch(harmony,
                 typeof(WeaponSelector).GetMethod("PopulateOptions",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public),
@@ -47,7 +45,6 @@ namespace GrowlerFrit
                 "WeaponSelector.PopulateOptions (PREFIX)",
                 prefix: true);
 
-           
             TryPatch(harmony,
                 typeof(WeaponChecker).GetMethod("VetLoadout",
                     BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public),
@@ -91,16 +88,12 @@ namespace GrowlerFrit
         /// <param name="enc"> the encylopedia singleton</param>
         /// <param name="key"> the specific JSON key of the weapon</param>
         /// <returns> the individual weapon mount object based off of the key provided. </returns>
-        internal static WeaponMount FindMountIndividual(Encyclopedia enc, String key)
+        internal static WeaponMount FindMount(Encyclopedia enc, string key)
         {
-            WeaponMount weapon = null;
             if (enc?.weaponMounts == null) return null;
             foreach (var mount in enc.weaponMounts)
-            {
-                if (mount == null) continue;
-                if (mount.jsonKey == key) weapon = mount;
-            }
-            return (weapon);
+                if (mount != null && mount.jsonKey == key) return mount;
+            return null;
         }
 
         /// <summary>
@@ -114,7 +107,6 @@ namespace GrowlerFrit
             foreach (var o in set.weaponOptions)
                 if (o != null && o.jsonKey == mount.jsonKey) return;
             set.weaponOptions.Add(mount);
-            //Log.LogInfo($"Added {mount.jsonKey} to '{set.name}'");
         }
 
         /// <summary>
@@ -125,17 +117,16 @@ namespace GrowlerFrit
         internal static void InjectIntoWeaponManager(WeaponManager wm, Encyclopedia enc)
         {
             if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
-            var jammer = FindMountIndividual(enc, JammerKey); // Gets the jammer mount object
-            var aradDouble = FindMountIndividual(enc, AradDoubleKey); // Gets the 2x ARAD mount object
-            
 
-            if (jammer == null) Log.LogWarning("Could not find JammingPod1!");
-            if (aradDouble == null) Log.LogWarning("Could not find ARM1_double!");
-            
+            // Pull the cloned pod from JammerPod2; it is already registered in the encyclopedia.
+            var pod = JammerPod2.newWeaponMount;
+            var aradDouble = FindMount(enc, AradDoubleKey);
 
-            AddOption(wm.hardpointSets[1], jammer);     // Forward Weapon Bay
-            AddOption(wm.hardpointSets[2], jammer);     // Rear Weapon Bay
+            if (pod == null) Log.LogWarning("[GrowlerFrit] GrowlerPodMount is null — JammerPod2 may not have loaded correctly.");
+            if (aradDouble == null) Log.LogWarning("[GrowlerFrit] Could not find ARM1_double!");
 
+            AddOption(wm.hardpointSets[1], pod);        // Forward Weapon Bay
+            AddOption(wm.hardpointSets[2], pod);        // Rear Weapon Bay
             AddOption(wm.hardpointSets[5], aradDouble); // Outer Wing Pylons
         }
 
@@ -151,11 +142,10 @@ namespace GrowlerFrit
         }
 
         /// <summary>
-        /// Patch to add the weapon options to the hardpoints for the Ifrit.
+        /// Patch to add the weapon options to the hardpoints for the Ifrit, so that it can then be used via the dropdown.
         /// </summary>
         public class WeaponSelectorPopulatePatch
         {
-
             public static void Prefix(HardpointSet hardpointSet)
             {
                 try
@@ -163,23 +153,23 @@ namespace GrowlerFrit
                     if (MpBlocker.MpBlocker.IsMultiplayer()) return;
                     if (Encyclopedia.i == null) return;
 
-                    var jammer = FindMountIndividual(Encyclopedia.i, JammerKey); // Gets the jammer mount object
-                    var aradDouble = FindMountIndividual(Encyclopedia.i, AradDoubleKey); // Gets the 2x ARAD mount object
+                    var pod = JammerPod2.newWeaponMount;
+                    var aradDouble = FindMount(Encyclopedia.i, AradDoubleKey);
 
                     if (hardpointSet.name == "Forward Weapon Bay")
-                        AddOption(hardpointSet, jammer);
+                        AddOption(hardpointSet, pod);
                     else if (hardpointSet.name == "Rear Weapon Bay")
-                        AddOption(hardpointSet, jammer);
+                        AddOption(hardpointSet, pod);
                     else if (hardpointSet.name == "Outer Wing Pylons")
                         AddOption(hardpointSet, aradDouble);
                 }
-                catch (Exception e) { Log.LogError("WeaponSelectorPopulatePatch failed: " + e); }
+                catch (Exception e) { Log.LogError("[GrowlerFrit] WeaponSelectorPopulatePatch failed: " + e); }
             }
         }
 
         /// <summary>
-        /// Injects into the weapon manager such that we can use the weapons. 
-        /// Uses ismultiplayer() from the MpBlocker to ensure that you can't use it in MP unless on MpRestricted mode. 
+        /// Injects into the aircraft definition such that we can use the weapons. 
+        /// Uses IsMultiplayer() from the MpBlocker to ensure that you can't use it in MP unless on MpRestricted mode. 
         /// </summary>
         public class VetLoadoutPatch
         {
@@ -194,9 +184,9 @@ namespace GrowlerFrit
                     if (wm == null) return;
 
                     InjectIntoWeaponManager(wm, Encyclopedia.i);
-                    Log.LogInfo("VetLoadout: injected into prefab for spawn validation.");
+                    Log.LogInfo("[GrowlerFrit] VetLoadout: injected pod into prefab for spawn validation.");
                 }
-                catch (Exception e) { Log.LogError("VetLoadoutPatch failed: " + e); }
+                catch (Exception e) { Log.LogError("[GrowlerFrit] VetLoadoutPatch failed: " + e); }
             }
         }
     }
