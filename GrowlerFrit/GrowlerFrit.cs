@@ -20,7 +20,6 @@ namespace GrowlerFrit
         private const string TargetAircraftName = "Multirole1";
         private const string JammerKey = "JammingPod1";
         private const string AradDoubleKey = "ARM1_double";
-        private const string SpecialSmokePod = "SpecialSmokePod";
 
         private void Awake()
         {
@@ -128,14 +127,15 @@ namespace GrowlerFrit
             if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
             var jammer = FindMountIndividual(enc, JammerKey); // Gets the jammer mount object
             var aradDouble = FindMountIndividual(enc, AradDoubleKey); // Gets the 2x ARAD mount object
-            var SmokePod = FindMountIndividual(enc, SpecialSmokePod); //  gets the special smoke pod?
+            
 
             if (jammer == null) Log.LogWarning("Could not find JammingPod1!");
             if (aradDouble == null) Log.LogWarning("Could not find ARM1_double!");
-            if (SmokePod == null) Log.LogWarning($"Smoke pod is not present.");
+            
 
             AddOption(wm.hardpointSets[1], jammer);     // Forward Weapon Bay
             AddOption(wm.hardpointSets[2], jammer);     // Rear Weapon Bay
+
             AddOption(wm.hardpointSets[5], aradDouble); // Outer Wing Pylons
         }
 
@@ -165,7 +165,6 @@ namespace GrowlerFrit
 
                     var jammer = FindMountIndividual(Encyclopedia.i, JammerKey); // Gets the jammer mount object
                     var aradDouble = FindMountIndividual(Encyclopedia.i, AradDoubleKey); // Gets the 2x ARAD mount object
-                    var SmokePod = FindMountIndividual(Encyclopedia.i, SpecialSmokePod); //  gets the special smoke pod?
 
                     if (hardpointSet.name == "Forward Weapon Bay")
                         AddOption(hardpointSet, jammer);
