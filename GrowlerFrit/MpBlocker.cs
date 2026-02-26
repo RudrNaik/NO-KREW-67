@@ -33,17 +33,29 @@ namespace MpBlocker
             Logger.LogInfo("MpBlocker loaded.");
         }
 
-        internal static void setEnum(MultiplayerMode mode)
+        /// <summary>
+        /// Setter for MultiplayerMode such that you can change it from other classes.
+        /// </summary>
+        /// <param name="mode">the specific mode you want to set it to. (MpDisabled or RestrictedMM)</param>
+        internal static void SetEnum(MultiplayerMode mode)
         {
             MpMode = mode;
         }
 
+        /// <summary>
+        /// Resets the multiplayer cache so that we dont spam the logs.
+        /// </summary>
         internal static void ResetMultiplayerCache()
         {
             _cachedIsMultiplayer = null;
             _hasLoggedMpState = false;
         }
 
+        /// <summary>
+        /// Checks if the game is in multiplayer via mirage.networkserver and mirage.networkclient. If you are hosting or are connected as a client somewhere else, the mod disables.
+        /// This check is bypassed if the MpMode is set to RestrictedMM, which appends the version string.
+        /// </summary>
+        /// <returns></returns>
         internal static bool IsMultiplayer()
         {
             // If RestrictedMM mode, dont block as we're on a separate version.
@@ -128,7 +140,10 @@ namespace MpBlocker
         }
     }
 
-    // Appends a version suffix in RestrictedMM mode so only matched clients can connect.
+    /// <summary>
+    /// Appends a version string to the current version string to force the game into restricted matchmaking with other clients who have the same string of mods installed.
+    /// Credit to Nikkorap for developing the original version to make a restricted MM mode.
+    /// </summary>
     [HarmonyPatch(typeof(Application), nameof(Application.version), MethodType.Getter)]
     internal static class VersionGetterPatch
     {
@@ -141,7 +156,9 @@ namespace MpBlocker
         }
     }
 
-    // Reset the MP cache on every scene load.
+    /// <summary>
+    /// Reset the MP cache on every scene load.
+    /// </summary>
     [HarmonyPatch(typeof(UnityEngine.SceneManagement.SceneManager), "Internal_SceneLoaded")]
     internal static class SceneLoadPatch
     {

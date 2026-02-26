@@ -33,8 +33,8 @@ namespace GrowlerFrit
                 "MpDisabled: mod only active in singleplayer. RestrictedMM: mod active in MP with version matching."
             );
 
-            Plugin.setEnum(MpMode.Value);
-            MpMode.SettingChanged += (sender, args) => Plugin.setEnum(MpMode.Value);
+            Plugin.SetEnum(MpMode.Value);
+            MpMode.SettingChanged += (sender, args) => Plugin.SetEnum(MpMode.Value);
 
             Harmony harmony = new Harmony("com.Spiny.GrowlerFrit");
             Log.LogMessage("GrowlerFrit patching...");

@@ -1,4 +1,3 @@
-Here's the full reference from your log:
 
 **Bombs**
 | Name | jsonKey |
