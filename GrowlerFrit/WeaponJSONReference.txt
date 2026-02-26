@@ -1,0 +1,216 @@
+Here's the full reference from your log:
+
+**Bombs**
+| Name | jsonKey |
+|------|---------|
+| GPO-500 x2 | bomb_500_double |
+| GPO-500 | bomb_500_internal |
+| GPO-500 x2 | bomb_500_internalx2 |
+| GPO-500 x4 | bomb_500_internalx4_flat |
+| GPO-500 x4 | bomb_500_internalx4_stack |
+| GPO-500 x6 | bomb_500_internalx6 |
+| GPO-500 x8 | bomb_500_internalx8 |
+| GPO-500 x12 | bomb_500_internalx12 |
+| GPO-500 | bomb_500_single |
+| PAB-125 x2 | bomb_125_double |
+| PAB-125 x2 | bomb_125_internalx2 |
+| PAB-125 x2 | bomb_125_internalx2_line |
+| PAB-125 x4 | bomb_125_internalx4 |
+| PAB-125 x6 | bomb_125_internalx6 |
+| PAB-125 x4 | bomb_125_quad |
+| PAB-125 | bomb_125_single |
+| PAB-125 x3 | bomb_125_triple |
+| PAB-250 | bomb_250_internal |
+| PAB-250 x2 | bomb_250_internalx2 |
+| PAB-250 x3 | bomb_250_internalx3 |
+| PAB-250 x8 | bomb_250_internalx8 |
+| PAB-250 x18 | bomb_250_internalx18 |
+| PAB-250 | bomb_250_single |
+| PAB-250 x3 | bomb_250_triple |
+| Demolition Bomb | bomb_demolition_internal |
+| Demolition Bomb | bomb_demolition_internalx1 |
+| Demolition Bomb x2 | bomb_demolition_internalx2 |
+| GPO-2P Auger | bomb_penetrator1_mount |
+| GPO-2P Auger x2 | bomb_penetrator1_internalx2 |
+| GPO-2P Auger x3 | bomb_penetrator1_internalx3 |
+
+**Glide Bombs**
+| Name | jsonKey |
+|------|---------|
+| PAB-80LR x2 | bomb_glide1_double |
+| PAB-80LR | bomb_glide1_single |
+| PAB-80LR x3 | bomb_glide1_triple |
+| PAB-80LR x4 | bomb_glide1_quad |
+| PAB-80LR x4 | bomb_glide1_quad_inernal |
+| PAB-80LR x2 | bomb_glide1_double_inernal |
+| PAB-80LR x6 | bomb_glide1_six_inernal |
+| PAB-250LR | bomb_250_glide_single |
+| PAB-250LR x2 | bomb_250_glide_double |
+| PAB-250LR | bomb_250_glide_internal |
+| PAB-250LR x2 | bomb_250_glide_internalx2 |
+| PAB-250LR x3 | bomb_250_glide_internalx3 |
+| PAB-250LR x8 | bomb_250_glide_internalx8 |
+| PAB-250LR x18 | bomb_250_glide_internalx18 |
+| GBM-500LR | bomb_500_glide_single |
+| GBM-500LR | bomb_500_glide_internalx1 |
+| GBM-500LR x4 | bomb_500_glide_internalx4_flat |
+| GBM-500LR x6 | bomb_500_glide_internalx6 |
+
+**Nuclear**
+| Name | jsonKey |
+|------|---------|
+| GPO-N (1.5kt) | nuclearBomb1_internal |
+| GPO-N (1.5kt) x2 | nuclearBomb1_internalx2 |
+| GPO-N (1.5kt) x4 | nuclearBomb1_internalx4 |
+| GPO-N (250kt) | nuclearBomb1_strategic_internal |
+| GPO-N (250kt) x2 | nuclearBomb1_strategic_internalx2 |
+| GPO-N (250kt) x4 | nuclearBomb1_strategic_internalx4 |
+| Piledriver TBM x2 | BallisticMissile1_internalx2 |
+| Piledriver TBM (20kt) x2 | BallisticMissile1_tacNuke_internalx2 |
+| ALND-4 (20kt) x2 | CruiseMissile20kt_internalx2 |
+
+**Air-to-Air Missiles**
+| Name | jsonKey |
+|------|---------|
+| MMR-S3 x2 | AAM1_double |
+| MMR-S3 x2 | AAM1_double_internal |
+| MMR-S3 x3 | AAM1_internalx3 |
+| MMR-S3 | AAM1_single |
+| MMR-S3 | AAM1_single_internal |
+| MMR-S3 x3 | AAM1_triple |
+| AAM-29 Scythe x2 | AAM2_double |
+| AAM-29 Scythe x2 | AAM2_double_internal |
+| AAM-29 Scythe | AAM2_single |
+| AAM-29 Scythe | AAM2_single_internal |
+| AAM-29 Scythe x3 | AAM2_triple |
+| AAM-29 Scythe x3 | AAM2_triple_internal |
+| IRM-S2 x2 | AAM3_double |
+| IRM-S2 x2 | AAM3_double_internal |
+| IRM-S2 x4 | AAM3_quad_internal |
+| IRM-S2 | AAM3_single |
+| IRM-S2 | AAM3_single_internal |
+| IRM-S2 x3 | AAM3_triple_internal_compact |
+| IRM-S2 x3 | AAM3_triple_internal_flat |
+| AAM-36 Scimitar x2 | AAM4_double |
+| AAM-36 Scimitar x2 | AAM4_double_internal |
+| AAM-36 Scimitar x2 | AAM4_double_internal_compact |
+| AAM-36 Scimitar | AAM4_single |
+| AAM-36 Scimitar | AAM4_single_internal |
+| AAM-36 Scimitar x3 | AAM4_triple_internal |
+| IRM-S1 x2 | IRMS1_double |
+| IRM-S1 x2 | IRMS1_internalx2 |
+| IRM-S1 | IRMS1_single |
+| IRM-S1 x3 | IRMS1_triple |
+
+**Air-to-Ground Missiles**
+| Name | jsonKey |
+|------|---------|
+| AGM-48 x2 | AGM1_double |
+| AGM-48 x2 | AGM1_double_compact |
+| AGM-48 x20 | AGM1_floorLauncher_QuadVTOL1 |
+| AGM-48 x4 | AGM1_quad |
+| AGM-48 x4 | AGM1_quad_internal |
+| AGM-48 | AGM1_single |
+| AGM-48 x3 | AGM1_triple |
+| AGM-48 x12 | AGM1_rotaryLauncher_UtilityHelo1 |
+| ATP-1 x6 | AGM2_6Pod |
+| ATP-1 x4 | AGM2_internalx4 |
+| AGM-68 x2 | AGM_heavyx2 |
+| AGM-68 | AGM_heavy_internal |
+| AGM-68 x2 | AGM_heavy_internalx2 |
+| AGM-68 x4 | AGM_heavy_internalx4 |
+| AGM-68 x6 | AGM_heavy_internalx6 |
+| AGM-68 x8 | AGM_heavy_internalx8 |
+| AGM-68 | AGM_heavy_single |
+| AGM-68 x3 | AGM_heavy_triple |
+| ARAD-116 x2 | ARM1_double |
+| ARAD-116 x2 | ARM1_internalx2 |
+| ARAD-116 | ARM1_single |
+| AShM-300 | AShM1_internal |
+| AShM-300 x2 | AShM1_internalx2 |
+| AShM-300 x4 | AShM1_internalx4_flat |
+| AShM-300 x4 | AShM1_internalx4_stack |
+| AShM-300 x6 | AShM1_internalx6 |
+| AShM-300 | AShM1_single |
+| AGM-99 x2 | AShM2_double |
+| AGM-99 | AShM2_single |
+| AGM-99 x2 | AShM2_internalx2_stack |
+| Tusko-B (HE) x2 | AShM3_internalx2 |
+| Tusko-B (HE) x4 | AShM3_internalx4_flat |
+| Tusko-B (HE) x4 | AShM3_internalx4_stack |
+| Tusko-B (HE) | AShM3_single |
+| ALM-C450 | CruiseMissile1_internal |
+| ALM-C450 x2 | CruiseMissile1_internalx2 |
+| ALM-C450 x3 | CruiseMissile1_internalx3 |
+| ALM-C450 x4 | CruiseMissile1_internalx4 |
+| ALM-C450 x6 | CruiseMissile1_internalx6 |
+| AIR-2 Genie | AIR-2_Genie_single |
+
+**Rockets**
+| Name | jsonKey |
+|------|---------|
+| AGR-18 Lynchpin x7 | RocketPod1_single |
+| AGR-18 Lynchpin x21 | RocketPod1_triple |
+| AGR-24 Kingpin x4 | Rocket2_4Pod |
+| AGR-24 Kingpin x12 | Rocket2_4Podx3 |
+
+**Guns**
+| Name | jsonKey |
+|------|---------|
+| 12.7mm Machine Gun (500 rounds) | 12.7mm_internal |
+| 12.7mm Machine Gun (500 rounds) | Gunpod12.7mm |
+| 20mm Rotary Cannon (750 rounds) | gun_20mm_internal |
+| 20mm Rotary Cannon (500 rounds) | gun_20mm_internal_500 |
+| 20mm Autocannon (250 rounds) | gunpod_20mm |
+| 25mm Rotary Cannon (960 rounds) | gunpod_25mm_trainer |
+| 27mm Autocannon (540 rounds) | autocannon_27mm_internal |
+| 30mm HE x750 | turret_30mmHE_750 |
+| 35mm AP x720 | gun_ammo_35mm_720 |
+| 30mm Rotary Cannon (1200 rounds) | gun_30mm_rotary_pod |
+| 57mm Cannon (150 rounds) | gun_57mm_pod |
+| 120kw High Energy Laser | laser_EW1 |
+
+**EW / Special**
+| Name | jsonKey |
+|------|---------|
+| ECM Pod | ECMPod1 |
+| Radar Jamming Pod | JammingPod1 |
+| Radome | Radome1 |
+| Special Smoke Pod | SpecialSmokePod |
+
+**Fuel**
+| Name | jsonKey |
+|------|---------|
+| Fuel Bladder 1500L x1 | FuelBladder1x1 |
+| Fuel Bladder 1500L x2 | FuelBladder1x2 |
+| Fuel Bladder 1500L x4 | FuelBladder1x4 |
+| Fuel Bladder 6,000L x1 | FuelBladder2x1 |
+| Fuel Bladder 10,000L x1 | FuelBladder3x1 |
+
+**Misc / Ground / Cargo**
+| Name | jsonKey |
+|------|---------|
+| Tail Hook | TailHook_Multirole1 |
+| Tail Hook | TailHook_Trainer |
+| Cargo Hook | CargoHook |
+| AFV6 AA | 6x6_1_AAx1 |
+| AFV6 APC | 6x6_1_APCx1 |
+| AFV6 AT | 6x6_1_ATx1 |
+| AFV6 IFV | 6x6_1_IFVx1 |
+| HLT-R | HLT-Rx1 |
+| LCV25 x2 | LightTruck1x2 |
+| LCV25 AT | LightTruck1_ATx1 |
+| LCV25 SAM | LightTruck1_SAMx1 |
+| Munitions Container x2 | MunitionsContainerx2 |
+| Munitions Container | MunitionsContainerx1 |
+| Naval Supply Container x2 | NavalSupplyContainerx2 |
+| Naval Supply Container | NavalSupplyContainerx1 |
+| Radar Container | RadarContainerx1 |
+| RAM45 Launcher | SAMTurret1x1 |
+| Munitions Pallet | MunitionsPallet1x1 |
+| Naval Supply Pallet | NavalPallet1x1 |
+| Hexhound GMG | UGV1_grenadex1 |
+| Hexhound SAM | UGV1_SAMx1 |
+| M12 Jackknife | UGVDozer1x1 |
+| Infantry Squad | Troopsx8_UtilityHelo1_F |
+| Infantry Squad | Troopsx8_UtilityHelo1_R |
