@@ -14,7 +14,7 @@ namespace MpBlocker
     }
 
     [BepInPlugin("com.Spiny.MpBlocker", "MpBlocker", "0.0.1")]
-    public class Plugin : BaseUnityPlugin
+    public class MpBlocker : BaseUnityPlugin
     {
         internal static ManualLogSource Log;                //da loggerrrrrr
         internal static MultiplayerMode MpMode;             //Enum to track the selected MP mode.
@@ -149,7 +149,7 @@ namespace MpBlocker
     {
         static void Postfix(ref string __result)
         {
-            if (Plugin.MpMode == MultiplayerMode.RestrictedMM)
+            if (MpBlocker.MpMode == MultiplayerMode.RestrictedMM)
             {
                 __result += "_GrowlerFrit-v1.0.0";
             }
@@ -164,7 +164,7 @@ namespace MpBlocker
     {
         static void Postfix()
         {
-            Plugin.ResetMultiplayerCache();
+            MpBlocker.ResetMultiplayerCache();
         }
     }
 }

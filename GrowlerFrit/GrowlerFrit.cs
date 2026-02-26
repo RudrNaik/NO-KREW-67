@@ -33,10 +33,10 @@ namespace GrowlerFrit
                 "MpDisabled: mod only active in singleplayer. RestrictedMM: mod active in MP with version matching."
             );
 
-            Plugin.SetEnum(MpMode.Value);
-            MpMode.SettingChanged += (sender, args) => Plugin.SetEnum(MpMode.Value);
+            MpBlocker.MpBlocker.SetEnum(MpMode.Value);
+            MpMode.SettingChanged += (sender, args) => MpBlocker.MpBlocker.SetEnum(MpMode.Value);
 
-            Harmony harmony = new Harmony("com.Spiny.GrowlerFrit");
+            Harmony harmony = new("com.Spiny.GrowlerFrit");
             Log.LogMessage("GrowlerFrit patching...");
 
             
@@ -160,7 +160,7 @@ namespace GrowlerFrit
             {
                 try
                 {
-                    if (Plugin.IsMultiplayer()) return;
+                    if (MpBlocker.MpBlocker.IsMultiplayer()) return;
                     if (Encyclopedia.i == null) return;
 
                     var jammer = FindMountIndividual(Encyclopedia.i, JammerKey); // Gets the jammer mount object
@@ -188,7 +188,7 @@ namespace GrowlerFrit
                 try
                 {
                     if (!IsTargetAircraft(definition)) return;
-                    if (Plugin.IsMultiplayer()) return;
+                    if (MpBlocker.MpBlocker.IsMultiplayer()) return;
 
                     var wm = definition.unitPrefab?.GetComponentInChildren<WeaponManager>();
                     if (wm == null) return;
