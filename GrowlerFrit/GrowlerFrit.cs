@@ -32,6 +32,7 @@ namespace GrowlerFrit
                 MultiplayerMode.MpDisabled,
                 "MpDisabled: mod only active in singleplayer. RestrictedMM: mod active in MP with version matching."
             );
+
             Plugin.setEnum(MpMode.Value);
             MpMode.SettingChanged += (sender, args) => Plugin.setEnum(MpMode.Value);
 
@@ -82,24 +83,6 @@ namespace GrowlerFrit
                 else Log.LogError($"Could not find {label}!");
             }
             catch (Exception e) { Log.LogError($"Failed to patch {label}: {e}"); }
-        }
-
-        /// <summary>
-        /// Specific variant of the FindMount method that finds the jammer and 2x ARAD
-        /// </summary>
-        /// <param name="enc"> Encyclopedia Singleton</param>
-        /// <returns> a tuple with the jammer and 2x arad weaponmounts. </returns>
-        internal static (WeaponMount jammer, WeaponMount aradDouble) FindMounts(Encyclopedia enc)
-        {
-            WeaponMount jammer = null, aradDouble = null;
-            if (enc?.weaponMounts == null) return (null, null);
-            foreach (var mount in enc.weaponMounts)
-            {
-                if (mount == null) continue;
-                if (mount.jsonKey == JammerKey) jammer = mount;
-                if (mount.jsonKey == AradDoubleKey) aradDouble = mount;
-            }
-            return (jammer, aradDouble);
         }
 
         /// <summary>
@@ -177,7 +160,8 @@ namespace GrowlerFrit
                     if (Plugin.IsMultiplayer()) return;
                     if (Encyclopedia.i == null) return;
 
-                    var (jammer, aradDouble) = FindMounts(Encyclopedia.i);
+                    var jammer = FindMountIndividual(Encyclopedia.i, JammerKey); // Gets the jammer mount object
+                    var aradDouble = FindMountIndividual(Encyclopedia.i, AradDoubleKey); // Gets the 2x ARAD mount object
 
                     if (hardpointSet.name == "Forward Weapon Bay")
                         AddOption(hardpointSet, jammer);
