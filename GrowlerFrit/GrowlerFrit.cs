@@ -36,7 +36,7 @@ namespace GrowlerFrit
             MpMode.SettingChanged += (sender, args) => MpBlocker.MpBlocker.SetEnum(MpMode.Value);
 
             Harmony harmony = new("com.Spiny.GrowlerFrit");
-            Log.LogMessage("GrowlerFrit patching...");
+            Log.LogInfo("GrowlerFrit patching...");
 
             TryPatch(harmony,
                 typeof(WeaponSelector).GetMethod("PopulateOptions",
@@ -97,7 +97,7 @@ namespace GrowlerFrit
         }
 
         /// <summary>
-        /// Addsan option to a selected hardpoint set object
+        /// Adds an option to a selected hardpoint set object
         /// </summary>
         /// <param name="set"> The selected hardpoint set.</param>
         /// <param name="mount"> The selected mount to add to the hardpoint set.</param>
