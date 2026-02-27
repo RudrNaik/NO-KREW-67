@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using System;
 using System.Reflection;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace GrowlerFrit
@@ -23,34 +24,32 @@ namespace GrowlerFrit
         // Notes: 
 
         // power: controls how much power the pod draws per tick. The jam amount  is scaled by (drawnPower / power),
-        // so lowering this reduces effectiveness if the plane's capacitor isnt big enough for it, but the main 'dropoff' is handled via the rangeFalloff animation curve.
+        // so lowering this reduces effectiveness if the plane's capacitor isnt big enough for it or we dont pull enough power 'for' it.
+        // but the main 'dropoff' is handled via the rangeFalloff animation curve.
         //        
         // rangeFalloff: an AnimationCurve that maps distance in meters to the jam multiplier.
         // This is the sole range limiter for the pod. Far as I can tell it's best used with the power multiplier at default of 13f
         //
         // For reference, the JammingPod1 curve is 0m = 1.0, 80000m = 0.0. This had our jamming curve being linear 
         // and just a straight y=x line from 100% to 0 when we hit 80km.
-        // 
-        // Basically, the curve is like this now instead of being linear with the added keyframes.:
-        //        value
-        //1.0 |*────────*
-        //    |          \    
-        //0.7 |           *----*
-        //    |                 \
-        //0.2 |                  \
-        //    |                   \
-        //0.0 |                    *
-        //    +----------------------→ distance
-        //    0    10    18     23     27km
+        //
+        // Keyframe format: (distance in metres, jam multiplier 0–1):
+        //      0 m  → 0.00  (burnthrough up to around 17km)
+        //  17000 m  → 0.06  (jams, but only useful if you have a full capacitor)
+        //  20000 m  → 1.00  (full effectiveness)
+        //  80000 m  → 1.00  (flat cap to match the medusa's jammer's curve.)
+        //
+        // We don't smooth the curve evenly and only smoothen out the middle keyframes where we make the jump. This is to give it a bit more flair as you can see the jammer flicker out within 20km.
+        // Also adds to the stress :)
 
         private static readonly Keyframe[] RangeFalloffKeyframes = new Keyframe[]
         {
-            // new Keyframe( 0f, 0.00f), Turns out the burnthrough doesnt work.
-            new Keyframe( 5000f, 1.00f),
-            new Keyframe(10000f, 0.95f),
-            new Keyframe(18000f, 0.70f),
-            new Keyframe(23000f, 0.20f),
-            new Keyframe(27000f, 0.00f),
+            new Keyframe(    0f, 0.00f),
+            new Keyframe( 5000f, 0.06f),
+            new Keyframe(10000f, 0.06f),
+            new Keyframe(17000f, 0.06f),
+            new Keyframe(20000f, 1.00f),
+            new Keyframe(80000f, 1.00f),
         };
         // ─────────────────────────────────────────────────────────────────────────
 
@@ -106,10 +105,24 @@ namespace GrowlerFrit
             if (RangeFalloffField != null)
             {
                 var curve = new AnimationCurve(RangeFalloffKeyframes);
-                // Smooth tangents so the falloff feels natural rather than piecewise-linear
-                for (int i = 0; i < curve.length; i++) { 
-                    curve.SmoothTangents(i, 0.5f);
+                int len = curve.keys.Length;
+
+                // Pin the near-zero keyframes down to the floor so the curve stays near zero at at the starting end of the curve. SmoothTangents on these.
+                if(len > 2) { 
+                // MoveKey is the correct way to edit a keyframe during runtime.
+                // We also use curve.keys to return a copy so we aren't playing with direct assignment.
+                curve.MoveKey(0, SetLinearKeyframe(curve.keys[0]));
+                curve.MoveKey(1, SetLinearKeyframe(curve.keys[1]));
                 }
+
+                // Smooth the rising middle section for a natural S-curve feel.
+                curve.SmoothTangents((len/2), 0.5f);
+                curve.SmoothTangents((len/2+1), 0.5f);
+
+                // Pin the end keyframes flat so the cap stays at 1.0.
+                curve.MoveKey(len-1, SetLinearKeyframe(curve.keys[len-1]));
+                curve.MoveKey(len-1, SetLinearKeyframe(curve.keys[len-1]));
+
                 curve.preWrapMode = WrapMode.ClampForever;
                 curve.postWrapMode = WrapMode.ClampForever;
                 RangeFalloffField.SetValue(component, curve);
@@ -118,6 +131,18 @@ namespace GrowlerFrit
             else Log.LogWarning("[M-JMMR] Could not set 'rangeFalloff' — field not found.");
         }
 
+        /// <summary>
+        /// Returns a copy of the keyframe with both tangents set to zero.
+        /// </summary>
+        /// <param name="k">
+        /// The keyframe we want to make linear.
+        /// </param>
+        private static Keyframe SetLinearKeyframe(Keyframe k)
+        {
+            k.inTangent = 0f;
+            k.outTangent = 0f;
+            return k;
+        }
 
         /// <summary>
         /// Clones the original weaponmount designated by the weapon key at the top into a new named WeaponMount before AfterLoad runs.
