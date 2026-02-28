@@ -4,7 +4,7 @@ This mod alters the ifrit such that you can use it as an electronic warfare plat
 
 The new mini radar jamming pods are custom to the ifrit and occupy the front and rear weapon bays. Ground crews also have to swap out the bay panels for custom fit ones so they can sit flush with the jamming pods (yes this is because the radar jammers clip through the floor and I cant fix that 'yet').
 
-The mini radar jamming pods however- are coated with radar absorbent materials. Meaning you wont be gaining as much to your RCS with the normal pods- at the cost of also being shorter range. Sadly- with being  'Mini' it also means that they cannot beat radar burnthrough. So within 17km of a radar source, the jammer will not be able to blind a target.
+The mini radar jamming pods however- are coated with radar absorbent materials. Meaning you wont be gaining as much to your RCS with the normal pods- at the cost of also being shorter range. Sadly- with being  'Mini' it also means that they cannot beat radar burnthrough. So within 14km of a radar source, the jammer will not be able to blind a target.
 
 # Config File Items:
 > **MpMode** | This is tied to a multiplayer blocker thats built in. When you set it to **MpDisabled**- it allows you to play with the mod active while solo, but when you join a lobby or host with others- it will disable. However- when set to **RestrictedMM** you no longer can join games in the server browser, but can host a game with the mod active at the caveat that whomeever else wants to join **needs** to have the mod installed as well.
