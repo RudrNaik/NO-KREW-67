@@ -19,7 +19,7 @@ namespace GrowlerFrit
         internal const string NewWeaponMountShort = "M-JMMR";
         internal const string NewWeaponMountInfoKey = "JammingPod2Info";
         internal const string NewWeaponMountDesc =
-            "Offensive jammer capable of jamming targets up to 20km each. They are coated in radar absorbent material, and have a significantly lower RCS at the cost of effectivness over distance.";
+            "Lower power offensive jammer capable of jamming one target each at the cost of allowing burnthrough from radar sources. They are coated in radar absorbent material, and have a significantly lower RCS at the cost of effectivness over distance.";
 
         // Notes: 
 
@@ -46,8 +46,8 @@ namespace GrowlerFrit
         {
             new Keyframe(    0f, 0.00f),
             new Keyframe( 5000f, 0.06f),
-            new Keyframe(10000f, 0.06f),
-            new Keyframe(17000f, 0.06f),
+            new Keyframe(10000, 0.03f),
+            new Keyframe(13000f, 0.06f),
             new Keyframe(20000f, 1.00f),
             new Keyframe(80000f, 1.00f),
         };
@@ -199,8 +199,8 @@ namespace GrowlerFrit
                     clonedMount.dontAutomaticallyAddToEncyclopedia = false;
 
                     //Reduce the RCS value (stealth coating)
-                    clonedMount.RCS = (float)0.0020;
-                    clonedMount.emptyRCS = (float)0.0020;
+                    clonedMount.RCS = (float)0.0015;
+                    clonedMount.emptyRCS = (float)0.0015;
 
 
                     // Apply tuned power and rangeFalloff values to the cloned component.
