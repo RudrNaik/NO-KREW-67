@@ -1,4 +1,5 @@
 # NO-KREW-67
+<img width="1535" height="990" alt="image" src="https://github.com/user-attachments/assets/f328c202-5304-4143-ac9e-9a1c83423d22" />
 
 This mod alters the ifrit such that you can use it as an electronic warfare platform. This adds custom stealth radar jammer pods to the internal bays (both forward and back) and then also a 2x ARAD mount to the outer wing as the inner wing would clip with the airbrake.
 
