@@ -19,7 +19,7 @@ namespace GrowlerFrit
         internal const string NewWeaponMountShort = "M-JMMR";
         internal const string NewWeaponMountInfoKey = "JammingPod2Info";
         internal const string NewWeaponMountDesc =
-            "Lower power offensive jammer capable of jamming one target each at the cost of allowing burnthrough from radar sources. They are coated in radar absorbent material, and have a significantly lower RCS at the cost of effectivness over distance.";
+            "Lower power offensive jammer capable of jamming one target each at the cost of allowing burnthrough from radar sources. They are coated in radar absorbent material, and have a significantly lower RCS";
 
         // Notes: 
 
