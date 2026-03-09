@@ -12,6 +12,7 @@ namespace GrowlerFrit
     [BepInPlugin("com.Spiny.GrowlerFrit", "GrowlerIfrit", "0.0.2")]
     [BepInDependency("com.Spiny.MpBlocker")]
     [BepInDependency("com.Spiny.JammerPod2")]
+    [BepInDependency("com.Spiny.ECMUpgrade")]
     public class GrowlerFrit : BaseUnityPlugin
     {
         internal static ManualLogSource Log;
@@ -121,12 +122,14 @@ namespace GrowlerFrit
             // Pull the cloned pod from JammerPod2; it is already registered in the encyclopedia.
             var pod = JammerPod2.newWeaponMount;
             var aradDouble = FindMount(enc, AradDoubleKey);
+            var ecmKit = ECMUpgrade.newWeaponMount;
 
             if (pod == null) Log.LogWarning("[GrowlerFrit] GrowlerPodMount is null — JammerPod2 may not have loaded correctly.");
             if (aradDouble == null) Log.LogWarning("[GrowlerFrit] Could not find ARM1_double!");
 
             AddOption(wm.hardpointSets[1], pod);        // Forward Weapon Bay
             AddOption(wm.hardpointSets[2], pod);        // Rear Weapon Bay
+            AddOption(wm.hardpointSets[3], ecmKit);     // Side Weapon Bays
             AddOption(wm.hardpointSets[5], aradDouble); // Outer Wing Pylons
         }
 
@@ -155,11 +158,14 @@ namespace GrowlerFrit
 
                     var pod = JammerPod2.newWeaponMount;
                     var aradDouble = FindMount(Encyclopedia.i, AradDoubleKey);
+                    var ECMUpgradeKit = ECMUpgrade.newWeaponMount;
 
                     if (hardpointSet.name == "Forward Weapon Bay")
                         AddOption(hardpointSet, pod);
                     else if (hardpointSet.name == "Rear Weapon Bay")
                         AddOption(hardpointSet, pod);
+                    else if(hardpointSet.name == "Side Weapon Bays")
+                        AddOption(hardpointSet, ECMUpgradeKit);
                     else if (hardpointSet.name == "Outer Wing Pylons")
                         AddOption(hardpointSet, aradDouble);
                 }
