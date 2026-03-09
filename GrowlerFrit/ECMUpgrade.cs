@@ -128,19 +128,18 @@ namespace GrowlerFrit
 
                     if (clonedMount.prefab != null)
                     {
-                        // Disable all mesh renderers so the weapons are invisible. Why we arent using this on jammerpod2? Funni.
-                        var renderers = clonedMount.prefab.GetComponentsInChildren<MeshRenderer>(includeInactive: true);
-                        foreach (var r in renderers) {  
-                            r.enabled = false;
-                        }
-                        Log.LogInfo($"Disabled {renderers.Length} MeshRenderer(s) on cloned prefab.");
+                        // Clone the prefab into a new GameObject so we don't touch the shared JammingPod1 asset
+                        GameObject clonedPrefab = UnityEngine.Object.Instantiate(clonedMount.prefab);
+                        clonedPrefab.name = "ECMkit_prefab";
+                        clonedPrefab.hideFlags = HideFlags.HideAndDontSave;
+                        clonedPrefab.SetActive(false);
+                        clonedMount.prefab = clonedPrefab;
 
-                        // Remove all Weapon components so the slot can't fire anything. We use Destroy rather than disabling so the WeaponManager doesn't try to call Fire() on a weapon component.
-                        var weapons = clonedMount.prefab.GetComponentsInChildren<Weapon>(includeInactive: true);
-                        foreach (var w in weapons) { 
-                            UnityEngine.Object.Destroy(w);
-                        }
-                        //Log.LogInfo($"Destroyed {weapons.Length} Weapon component(s) on cloned prefab.");
+                        // Destroy JammingPod components on our clone only so the original JammingPod1 asset is untouched.
+                        var jammers = clonedPrefab.GetComponentsInChildren<JammingPod>(includeInactive: true);
+                        foreach (var j in jammers)
+                            UnityEngine.Object.Destroy(j);
+                        Log.LogInfo($"Destroyed {jammers.Length} JammingPod component(s) on ECMkit prefab.");
                     }
 
                     if (clonedInfo != null) clonedMount.info = clonedInfo;
