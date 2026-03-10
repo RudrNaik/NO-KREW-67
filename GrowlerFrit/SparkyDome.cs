@@ -20,8 +20,8 @@ namespace GrowlerFrit
         internal const string ClonedMountName = "Dorsal Radome";
         internal const string ClonedMountShort = "RADOME";
         internal const string ClonedMountInfoKey = "DorsalRadome1Info";
-        internal const string ClonedMountDesc = "High power radome mmount placed right behind the cockpit. Scans in all directions and has a lower radar floor than the mounted radar.";
-
+        internal const string ClonedMountDesc =
+            "Powerful long-range all-aspect radar, capable of spotting stealhier aircraft and planes as low as 5m (16f).";
 
         internal static float x = 0f;
         internal static float y = 0.6f;
@@ -194,9 +194,9 @@ namespace GrowlerFrit
                     // Create and register the new HardpointSet
                     var newSet = new HardpointSet
                     {
-                        name = "Dorsal Radome",
+                        name = "Dorsal Mount",
                         hardpoints = new List<Hardpoint> { hardpoint },
-                        weaponOptions = new List<WeaponMount> { null, clonedMount },
+                        weaponOptions = new List<WeaponMount> { null }, 
                         precludingHardpointSets = new List<byte>()
                     };
 

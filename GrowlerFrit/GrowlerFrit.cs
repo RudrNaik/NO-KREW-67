@@ -181,7 +181,7 @@ namespace GrowlerFrit
                         AddOption(hardpointSet, ECMUpgradeKit);
                     else if (hardpointSet.name == "Outer Wing Pylons")
                         AddOption(hardpointSet, aradDouble);
-                    else if (hardpointSet.name == "Dorsal Radome")
+                    else if (hardpointSet.name == "Dorsal Mount")
                         AddOption(hardpointSet, radome);
                 }
                 catch (Exception e) { Log.LogError("[GrowlerFrit] WeaponSelectorPopulatePatch failed: " + e); }
@@ -202,23 +202,6 @@ namespace GrowlerFrit
 
                     var wm = definition.unitPrefab?.GetComponentInChildren<WeaponManager>();
                     if (wm == null) return;
-
-                    if (MpBlocker.MpBlocker.IsMultiplayer())
-                    {
-                        // In MP: strip the radome option from the hardpoint set entirely
-                        // so it cannot be selected. The empty slot remains but nothing can be loaded.
-                        foreach (var hs in wm.hardpointSets)
-                        {
-                            if (hs?.name == "Dorsal Radome")
-                            {
-                                hs.weaponOptions.Clear();
-                                hs.weaponOptions.Add(null); // keep the "Empty" option only
-                                Log.LogInfo("[GrowlerFrit] MP mode — cleared Dorsal Radome options.");
-                                break;
-                            }
-                        }
-                        return;
-                    }
 
                     InjectIntoWeaponManager(wm, Encyclopedia.i);
                     Log.LogInfo("[GrowlerFrit] VetLoadout: injected pod into prefab for spawn validation.");
