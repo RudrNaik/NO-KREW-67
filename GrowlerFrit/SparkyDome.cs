@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
+using BepInEx.Configuration;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,16 @@ namespace GrowlerFrit
         internal const string ClonedMountName = "Dorsal Radome";
         internal const string ClonedMountShort = "RADOME";
         internal const string ClonedMountInfoKey = "DorsalRadome1Info";
-        internal const string ClonedMountDesc = "High power radome mmount placed right behind the cockpit. Scans in all directions and has a lower radar floor than the mounted radar. Also really heavy. Make sure to scan your pilots for cancer after flying.";
+        internal const string ClonedMountDesc = "High power radome mmount placed right behind the cockpit. Scans in all directions and has a lower radar floor than the mounted radar.";
 
+
+        internal static float x = 0f;
+        internal static float y = 0.6f;
+        internal static float z = -3.0f;
 
         // Local position of the radome hardpoint relative to fuselage_F
         // X=0 (centerline), Y=0.8 (dorsal), Z=-1.0 (places it just behind the cockpit for now
-        private static readonly Vector3 RadomeLocalPos = new Vector3(0f, 0.8f, -1.0f);
+        private static readonly Vector3 RadomeLocalPos = new Vector3(x, y, z);
         private static readonly Quaternion RadomeLocalRot = Quaternion.Euler(0f, 180f, 0f);
 
 
@@ -70,6 +75,44 @@ namespace GrowlerFrit
         }
 
         /// <summary>
+        /// Finds a specific aircraft definition based off of the internal name. IE: Multirole 1.
+        /// </summary>
+        /// <param name="enc">Encyclopedia instance</param>
+        /// <param name="AircraftName">Internal name of the aircraft.</param>
+        /// <returns>Aircraft Definition based off of the name provided. Null if not found.</returns>
+        public static AircraftDefinition findAircraftDefinition(Encyclopedia enc, String AircraftName)
+        {
+            foreach (var def in enc.aircraft)
+            {
+                if (def != null && def.name.IndexOf(AircraftName, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return def;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Finds a specific weaponMount object from the encyclopedia based off of the internal JSON key
+        /// </summary>
+        /// <param name="enc">Encyclopedia instance</param>
+        /// <param name="key">internal JSON key for the weaponMount</param>
+        /// <returns>weaponMount based off of the JSON key, null if none found.</returns>
+        public static WeaponMount findMount(Encyclopedia enc, String key)
+        {
+            foreach (var m in enc.weaponMounts)
+            {
+                if (m != null && m.jsonKey == key)
+                {
+                    return m;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Clones Radome1 into a new WeaponMount and registers it, then adds a new
         /// HardpointSet to the Ifrit's WeaponManager with a single dorsal hardpoint.
         /// The hardpoint transform is created as a child of fuselage_F at RadomeLocalPos.
@@ -82,29 +125,16 @@ namespace GrowlerFrit
 
                 try
                 {
-                    // Find the Ifrit prefab
-                    AircraftDefinition ifrit = null;
-                    foreach (var def in __instance.aircraft)
-                    {
-                        if (def != null && def.name.IndexOf("Multirole1",
-                            StringComparison.OrdinalIgnoreCase) >= 0)
-                        { ifrit = def; break; }
-                    }
+                    //Find ifrit definition
+                    AircraftDefinition ifrit = findAircraftDefinition(__instance, "Multirole1");
 
-                    if (ifrit?.unitPrefab == null)
+                    if(ifrit == null)
                     {
-                        Log.LogError("[DorsalRadome] Could not find Ifrit prefab.");
-                        return;
+                        Log.LogError("Ifrit defintiion returned null");
                     }
 
                     // Find source WeaponMount
-                    WeaponMount sourceMount = null;
-                    foreach (var m in __instance.weaponMounts)
-                    {
-                        if (m != null && m.jsonKey == RadomeMountKey)
-                        { sourceMount = m; break; }
-                    }
-
+                    WeaponMount sourceMount = findMount(__instance, RadomeMountKey);
                     if (sourceMount == null)
                     {
                         Log.LogError($"[DorsalRadome] Could not find '{RadomeMountKey}' in encyclopedia.");

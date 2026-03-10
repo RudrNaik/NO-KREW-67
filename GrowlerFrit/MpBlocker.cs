@@ -64,10 +64,10 @@ namespace MpBlocker
                 return false;
             }
 
-            if (_cachedIsMultiplayer.HasValue)
-            {
-                return _cachedIsMultiplayer.Value;
-            }
+            //if (_cachedIsMultiplayer.HasValue)
+            //{
+            //    return _cachedIsMultiplayer.Value;
+            //}
 
             try
             {
