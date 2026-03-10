@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace GrowlerFrit
 {
-    [BepInPlugin("com.Spiny.DorsalRadome", "DorsalRadome", "0.0.1")]
+    [BepInPlugin("com.Spiny.SparkyDome", "SparkyDome", "0.0.1")]
     [BepInDependency("com.Spiny.ECMUpgrade")]
     internal class SparkyDome : BaseUnityPlugin
     {
@@ -27,8 +27,7 @@ namespace GrowlerFrit
         internal static float y = 0.6f;
         internal static float z = -3.0f;
 
-        // Local position of the radome hardpoint relative to fuselage_F
-        // X=0 (centerline), Y=0.8 (dorsal), Z=-1.0 (places it just behind the cockpit for now
+        // Local position and rotation of the radome hardpoint relative to fuselage_F, uses x y and z from above.
         private static readonly Vector3 RadomeLocalPos = new Vector3(x, y, z);
         private static readonly Quaternion RadomeLocalRot = Quaternion.Euler(0f, 180f, 0f);
 
@@ -66,7 +65,7 @@ namespace GrowlerFrit
         /// <param name="enc">Encyclopedia instance</param>
         /// <param name="AircraftName">Internal name of the aircraft.</param>
         /// <returns>Aircraft Definition based off of the name provided. Null if not found.</returns>
-        public static AircraftDefinition findAircraftDefinition(Encyclopedia enc, String AircraftName)
+        public static AircraftDefinition FindAircraftDefinition(Encyclopedia enc, String AircraftName)
         {
             foreach (var def in enc.aircraft)
             {
@@ -112,7 +111,7 @@ namespace GrowlerFrit
                 try
                 {
                     //Find ifrit definition
-                    AircraftDefinition ifrit = findAircraftDefinition(__instance, "Multirole1");
+                    AircraftDefinition ifrit = FindAircraftDefinition(__instance, "Multirole1");
 
                     if(ifrit == null)
                     {
@@ -123,7 +122,7 @@ namespace GrowlerFrit
                     WeaponMount sourceMount = findMount(__instance, RadomeMountKey);
                     if (sourceMount == null)
                     {
-                        Log.LogError($"[DorsalRadome] Could not find '{RadomeMountKey}' in encyclopedia.");
+                        Log.LogError($"Could not find '{RadomeMountKey}' in encyclopedia.");
                         return;
                     }
 
@@ -136,9 +135,9 @@ namespace GrowlerFrit
                         clonedInfo.weaponName = ClonedMountName;
                         clonedInfo.shortName = ClonedMountShort;
                         clonedInfo.description = ClonedMountDesc;
-                        Log.LogInfo($"[DorsalRadome] Cloned WeaponInfo as '{ClonedMountInfoKey}'");
+                        Log.LogInfo($"Cloned WeaponInfo as '{ClonedMountInfoKey}'");
                     }
-                    else Log.LogWarning("[DorsalRadome] sourceMount.info is null.");
+                    else Log.LogWarning("sourceMount.info is null.");
 
                     // Clone WeaponMount
                     clonedMount = UnityEngine.Object.Instantiate(sourceMount);
@@ -149,28 +148,26 @@ namespace GrowlerFrit
                     if (clonedInfo != null) clonedMount.info = clonedInfo;
 
                     __instance.weaponMounts.Add(clonedMount);
-                    Log.LogInfo($"[DorsalRadome] '{ClonedMountKey}' registered in encyclopedia.");
-
-
-                    //Multiplayer blocker.
-                    if (MpBlocker.MpBlocker.IsMultiplayer()) return;
+                    Log.LogInfo($"'{ClonedMountKey}' registered in encyclopedia.");
 
                     // Find fuselage_F part on the Ifrit prefab to place the radome
                     Transform fuselageF = ifrit.unitPrefab.transform.Find("fuselage_F");
                     if (fuselageF == null)
                     {
-                        Log.LogError("[DorsalRadome] Could not find fuselage_F on Ifrit prefab.");
+                        Log.LogError("Could not find fuselage_F on Ifrit prefab.");
                         return;
                     }
 
                     // Borrow the UnitPart from fuselage_F to attach the radome for mass/drag accounting.
                     UnitPart fuselagePart = fuselageF.GetComponent<UnitPart>();
                     if (fuselagePart == null)
+                    {
                         fuselagePart = fuselageF.GetComponentInChildren<UnitPart>();
+                    }
 
                     if (fuselagePart == null)
                     {
-                        Log.LogError("[DorsalRadome] Could not find UnitPart on fuselage_F.");
+                        Log.LogError("Could not find UnitPart on fuselage_F.");
                         return;
                     }
 
@@ -203,7 +200,7 @@ namespace GrowlerFrit
                     var wm = ifrit.unitPrefab.GetComponentInChildren<WeaponManager>();
                     if (wm == null)
                     {
-                        Log.LogError("[DorsalRadome] Could not find WeaponManager on Ifrit prefab.");
+                        Log.LogError("Could not find WeaponManager on Ifrit prefab.");
                         return;
                     }
 
@@ -214,7 +211,7 @@ namespace GrowlerFrit
                     newSets[newSets.Length - 1] = newSet;
                     wm.hardpointSets = newSets;
 
-                    Log.LogInfo($"[DorsalRadome] Added 'Dorsal Radome' hardpoint set at index [{newSets.Length - 1}].");
+                    Log.LogInfo($"Added 'Dorsal Radome' hardpoint set at index [{newSets.Length - 1}].");
                 }
                 catch (Exception e) { Log.LogError("DorsalRadome.EncyclopediaPatch failed: " + e); }
             }

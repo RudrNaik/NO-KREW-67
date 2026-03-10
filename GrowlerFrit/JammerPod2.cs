@@ -199,8 +199,8 @@ namespace GrowlerFrit
                     clonedMount.dontAutomaticallyAddToEncyclopedia = false;
 
                     //Reduce the RCS value (stealth coating)
-                    clonedMount.RCS = (float)0.0015;
-                    clonedMount.emptyRCS = (float)0.0015;
+                    clonedMount.RCS = (float)0.0035;
+                    clonedMount.emptyRCS = (float)0.0035;
 
 
                     // Apply tuned power and rangeFalloff values to the cloned component.
