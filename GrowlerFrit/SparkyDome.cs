@@ -57,20 +57,6 @@ namespace GrowlerFrit
             }
             catch (Exception e) { Log.LogError("Failed to patch Encyclopedia.AfterLoad: " + e); }
 
-            try
-            {
-                var method = typeof(WeaponChecker).GetMethod("VetLoadout",
-                    BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-
-                if (method != null)
-                {
-                    harmony.Patch(method, prefix: new HarmonyMethod(typeof(VetLoadoutPatch), "Prefix"));
-                    Log.LogInfo("Patched WeaponChecker.VetLoadout (PREFIX)");
-                }
-                else Log.LogError("Could not find WeaponChecker.VetLoadout.");
-            }
-            catch (Exception e) { Log.LogError("Failed to patch WeaponChecker.VetLoadout: " + e); }
-
             Log.LogInfo("DorsalRadome loaded.");
         }
 
@@ -165,6 +151,10 @@ namespace GrowlerFrit
                     __instance.weaponMounts.Add(clonedMount);
                     Log.LogInfo($"[DorsalRadome] '{ClonedMountKey}' registered in encyclopedia.");
 
+
+                    //Multiplayer blocker.
+                    if (MpBlocker.MpBlocker.IsMultiplayer()) return;
+
                     // Find fuselage_F part on the Ifrit prefab to place the radome
                     Transform fuselageF = ifrit.unitPrefab.transform.Find("fuselage_F");
                     if (fuselageF == null)
@@ -228,38 +218,6 @@ namespace GrowlerFrit
                 }
                 catch (Exception e) { Log.LogError("DorsalRadome.EncyclopediaPatch failed: " + e); }
             }
-        }
-
-        /// <summary>
-        /// Ensures DorsalRadome1 is in the new hardpoint set's weaponOptions on the
-        /// prefab before VetLoadout strips it.
-        /// </summary>
-        public class VetLoadoutPatch
-        {
-            public static void Prefix(AircraftDefinition definition)
-            {
-                try
-                {
-                    if (clonedMount == null) return;
-                    if (definition?.unitPrefab == null) return;
-                    if (definition.name.IndexOf("Multirole1", StringComparison.OrdinalIgnoreCase) < 0) return;
-
-                    var wm = definition.unitPrefab.GetComponentInChildren<WeaponManager>();
-                    if (wm?.hardpointSets == null) return;
-
-                    // Find the Dorsal Radome set by name and ensure mount is present
-                    foreach (var hs in wm.hardpointSets)
-                    {
-                        if (hs?.name == "Dorsal Radome")
-                        {
-                            if (!hs.weaponOptions.Contains(clonedMount))
-                                hs.weaponOptions.Add(clonedMount);
-                            return;
-                        }
-                    }
-                }
-                catch (Exception e) { Log.LogError("DorsalRadome.VetLoadoutPatch failed: " + e); }
-            }
-        }
+        }              
     }
 }

@@ -117,12 +117,15 @@ namespace GrowlerFrit
         /// <param name="enc"> The Encyclopedia Singleton</param>
         internal static void InjectIntoWeaponManager(WeaponManager wm, Encyclopedia enc)
         {
+            if (MpBlocker.MpBlocker.IsMultiplayer()) return;
+
             if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
 
             // Pull the cloned pod from JammerPod2; it is already registered in the encyclopedia.
             var pod = JammerPod2.newWeaponMount;
             var aradDouble = FindMount(enc, AradDoubleKey);
             var ecmKit = ECMUpgrade.newWeaponMount;
+            var radome = SparkyDome.clonedMount;
 
             if (pod == null) Log.LogWarning("[GrowlerFrit] GrowlerPodMount is null — JammerPod2 may not have loaded correctly.");
             if (aradDouble == null) Log.LogWarning("[GrowlerFrit] Could not find ARM1_double!");
@@ -131,6 +134,15 @@ namespace GrowlerFrit
             AddOption(wm.hardpointSets[2], pod);        // Rear Weapon Bay
             AddOption(wm.hardpointSets[3], ecmKit);     // Side Weapon Bays
             AddOption(wm.hardpointSets[5], aradDouble); // Outer Wing Pylons
+
+            foreach (var hs in wm.hardpointSets)
+            {
+                if (hs?.name == "Dorsal Radome")
+                {
+                    AddOption(hs, radome);
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -159,15 +171,18 @@ namespace GrowlerFrit
                     var pod = JammerPod2.newWeaponMount;
                     var aradDouble = FindMount(Encyclopedia.i, AradDoubleKey);
                     var ECMUpgradeKit = ECMUpgrade.newWeaponMount;
+                    var radome = SparkyDome.clonedMount;
 
                     if (hardpointSet.name == "Forward Weapon Bay")
                         AddOption(hardpointSet, pod);
                     else if (hardpointSet.name == "Rear Weapon Bay")
                         AddOption(hardpointSet, pod);
-                    else if(hardpointSet.name == "Side Weapon Bays")
+                    else if (hardpointSet.name == "Side Weapon Bays")
                         AddOption(hardpointSet, ECMUpgradeKit);
                     else if (hardpointSet.name == "Outer Wing Pylons")
                         AddOption(hardpointSet, aradDouble);
+                    else if (hardpointSet.name == "Dorsal Radome")
+                        AddOption(hardpointSet, radome);
                 }
                 catch (Exception e) { Log.LogError("[GrowlerFrit] WeaponSelectorPopulatePatch failed: " + e); }
             }
@@ -184,10 +199,26 @@ namespace GrowlerFrit
                 try
                 {
                     if (!IsTargetAircraft(definition)) return;
-                    if (MpBlocker.MpBlocker.IsMultiplayer()) return;
 
                     var wm = definition.unitPrefab?.GetComponentInChildren<WeaponManager>();
                     if (wm == null) return;
+
+                    if (MpBlocker.MpBlocker.IsMultiplayer())
+                    {
+                        // In MP: strip the radome option from the hardpoint set entirely
+                        // so it cannot be selected. The empty slot remains but nothing can be loaded.
+                        foreach (var hs in wm.hardpointSets)
+                        {
+                            if (hs?.name == "Dorsal Radome")
+                            {
+                                hs.weaponOptions.Clear();
+                                hs.weaponOptions.Add(null); // keep the "Empty" option only
+                                Log.LogInfo("[GrowlerFrit] MP mode — cleared Dorsal Radome options.");
+                                break;
+                            }
+                        }
+                        return;
+                    }
 
                     InjectIntoWeaponManager(wm, Encyclopedia.i);
                     Log.LogInfo("[GrowlerFrit] VetLoadout: injected pod into prefab for spawn validation.");
