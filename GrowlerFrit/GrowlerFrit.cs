@@ -13,6 +13,7 @@ namespace GrowlerFrit
     [BepInDependency("com.Spiny.MpBlocker")]
     [BepInDependency("com.Spiny.JammerPod2")]
     [BepInDependency("com.Spiny.ECMUpgrade")]
+    [BepInDependency("com.Spiny.SparkyDome")]
     public class GrowlerFrit : BaseUnityPlugin
     {
         internal static ManualLogSource Log;
@@ -121,14 +122,14 @@ namespace GrowlerFrit
 
             if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
 
-            // Pull the cloned pod from JammerPod2; it is already registered in the encyclopedia.
+            
             var pod = JammerPod2.newWeaponMount;
             var aradDouble = FindMount(enc, AradDoubleKey);
             var ecmKit = ECMUpgrade.newWeaponMount;
             var radome = SparkyDome.clonedMount;
 
-            if (pod == null) Log.LogWarning("[GrowlerFrit] GrowlerPodMount is null — JammerPod2 may not have loaded correctly.");
-            if (aradDouble == null) Log.LogWarning("[GrowlerFrit] Could not find ARM1_double!");
+            if (pod == null) Log.LogWarning("GrowlerPodMount is null — JammerPod2 may not have loaded correctly.");
+            if (aradDouble == null) Log.LogWarning("Could not find ARM1_double.");
 
             AddOption(wm.hardpointSets[1], pod);        // Forward Weapon Bay
             AddOption(wm.hardpointSets[2], pod);        // Rear Weapon Bay
@@ -137,7 +138,7 @@ namespace GrowlerFrit
 
             foreach (var hs in wm.hardpointSets)
             {
-                if (hs?.name == "Dorsal Radome")
+                if (hs?.name == "Dorsal Mount")
                 {
                     AddOption(hs, radome);
                     break;
@@ -181,10 +182,10 @@ namespace GrowlerFrit
                         AddOption(hardpointSet, ECMUpgradeKit);
                     else if (hardpointSet.name == "Outer Wing Pylons")
                         AddOption(hardpointSet, aradDouble);
-                    else if (hardpointSet.name == "Dorsal Radome")
+                    else if (hardpointSet.name == "Dorsal Mount")
                         AddOption(hardpointSet, radome);
                 }
-                catch (Exception e) { Log.LogError("[GrowlerFrit] WeaponSelectorPopulatePatch failed: " + e); }
+                catch (Exception e) { Log.LogError("WeaponSelectorPopulatePatch failed: " + e); }
             }
         }
 
@@ -203,27 +204,10 @@ namespace GrowlerFrit
                     var wm = definition.unitPrefab?.GetComponentInChildren<WeaponManager>();
                     if (wm == null) return;
 
-                    if (MpBlocker.MpBlocker.IsMultiplayer())
-                    {
-                        // In MP: strip the radome option from the hardpoint set entirely
-                        // so it cannot be selected. The empty slot remains but nothing can be loaded.
-                        foreach (var hs in wm.hardpointSets)
-                        {
-                            if (hs?.name == "Dorsal Radome")
-                            {
-                                hs.weaponOptions.Clear();
-                                hs.weaponOptions.Add(null); // keep the "Empty" option only
-                                Log.LogInfo("[GrowlerFrit] MP mode — cleared Dorsal Radome options.");
-                                break;
-                            }
-                        }
-                        return;
-                    }
-
                     InjectIntoWeaponManager(wm, Encyclopedia.i);
-                    Log.LogInfo("[GrowlerFrit] VetLoadout: injected pod into prefab for spawn validation.");
+                    Log.LogInfo("VetLoadout: injected pod into prefab for spawn validation.");
                 }
-                catch (Exception e) { Log.LogError("[GrowlerFrit] VetLoadoutPatch failed: " + e); }
+                catch (Exception e) { Log.LogError("VetLoadoutPatch failed: " + e); }
             }
         }
     }

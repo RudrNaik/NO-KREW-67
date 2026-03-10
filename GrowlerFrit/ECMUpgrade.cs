@@ -19,7 +19,7 @@ namespace GrowlerFrit
         internal const string NewWeaponMountShort = "ECM++";
         internal const string NewWeaponMountInfoKey = "ECMkitInfo";
         internal const string NewWeaponMountDesc = "Advanced ECM kit that provides more capacitance and power to the internal radar jammer.";
-        private const float CapacitanceMultiplier = 3.5f;
+        private const float CapacitanceMultiplier = 3.0f;
         private const float JammingIntensityMultiplier = 4.0f;
 
         internal static WeaponMount newWeaponMount = null;
@@ -147,6 +147,7 @@ namespace GrowlerFrit
                     __instance.weaponMounts.Add(clonedMount);
                     newWeaponMount = clonedMount;
                     Log.LogInfo($"'{NewWeaponMountKey}' registered in encyclopedia.");
+                    //Log.LogInfo($"Mass: {clonedMount.mass}");
                 }
                 catch (Exception e) { Log.LogError("EncyclopediaPatch.Prefix failed: " + e); }
             }
