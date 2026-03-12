@@ -1,5 +1,5 @@
-# NO-KREW-67
-<img width="1535" height="990" alt="image" src="https://github.com/user-attachments/assets/f328c202-5304-4143-ac9e-9a1c83423d22" />
+# E/KR-67
+![2034B4~1](https://github.com/user-attachments/assets/1ce231fa-6344-416b-8b60-914b85f7ea32)
 
 This mod alters the ifrit such that you can use it as an electronic warfare platform. This adds custom stealth radar jammer pods to the internal bays (both forward and back), a 2x ARAD mount to the outer pylons, an improved ECM kit that can be mounted in the heater bays, and then a dorsal mounted radome.
 
@@ -7,7 +7,7 @@ The new mini radar jamming pods are custom to the ifrit and occupy the front and
 
 The improved ECM kit was created to help mitigate the issue of the original capacitor. It increases the amount of charge in your capacitor, and also includes an improved countermeasure jammer that is 4x more effective (at least thats what Green Coast Aerospace says). But- like the mini jamming pods, you have to sacrifice your side weapon bays for them.
 
-And lastly, a new radome mount is attached to the center of the fuselage to allow the Ifrit to really become an electronic warfare aircraft. It's heavy however, and a full load of jammers, ARADs, the ECM kit, and then the radome will make you quite sluggish.
+And lastly, a new radome mount is attached to the center of the fuselage to allow the Ifrit to perform an AWACS duty. It's heavy however, and a full load of jammers, ARADs, the ECM kit, and then the radome will make you quite sluggish.
 
 # Config File Items:
 > **MpMode** | This is tied to a multiplayer blocker thats built in. When you set it to **MpDisabled**- it allows you to play with the mod active while solo, but when you join a lobby or host with others- it will disable (You will still see the radome mount, just it cannot be used). However- when set to **RestrictedMM** you no longer can join games in the server browser, but can host a game with the mod installed and active. NOTE: Whomeever else wants to join **needs** to have the mod installed as well as the version strings need to match.
