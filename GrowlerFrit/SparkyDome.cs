@@ -34,6 +34,9 @@ namespace GrowlerFrit
 
         internal static WeaponMount clonedMount = null;
 
+        internal static HardpointSet dorsalHardpointSet = null;
+
+
         private void Awake()
         {
             Log = Logger;
@@ -196,6 +199,8 @@ namespace GrowlerFrit
                         weaponOptions = new List<WeaponMount> { null }, 
                         precludingHardpointSets = new List<byte>()
                     };
+
+                    dorsalHardpointSet = newSet;
 
                     var wm = ifrit.unitPrefab.GetComponentInChildren<WeaponManager>();
                     if (wm == null)

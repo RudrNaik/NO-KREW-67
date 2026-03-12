@@ -54,6 +54,13 @@ namespace GrowlerFrit
                 "WeaponChecker.VetLoadout (PREFIX)",
                 prefix: true);
 
+            TryPatch(harmony,
+                typeof(UnityEngine.SceneManagement.SceneManager).GetMethod("Internal_SceneLoaded",
+                    BindingFlags.Static | BindingFlags.NonPublic),
+                typeof(SceneLoadPatch), "Postfix",
+                "SceneManager.Internal_SceneLoaded (POSTFIX)",
+                prefix: false);
+
             Log.LogInfo("GrowlerFrit loaded.");
         }
 
@@ -200,6 +207,7 @@ namespace GrowlerFrit
                 try
                 {
                     if (!IsTargetAircraft(definition)) return;
+                    if (MpBlocker.MpBlocker.IsMultiplayer()) return;
 
                     var wm = definition.unitPrefab?.GetComponentInChildren<WeaponManager>();
                     if (wm == null) return;
@@ -208,6 +216,59 @@ namespace GrowlerFrit
                     Log.LogInfo("VetLoadout: injected pod into prefab for spawn validation.");
                 }
                 catch (Exception e) { Log.LogError("VetLoadoutPatch failed: " + e); }
+            }
+        }
+
+        /// <summary>
+        /// On every scene load, check if we're in MP and if so strip the Dorsal Radome
+        /// hardpoint set from the Ifrit prefab. By scene load time the network state is
+        /// fully established so IsMultiplayer() returns an accurate result.
+        /// </summary>
+        public class SceneLoadPatch
+        {
+            public static void Postfix()
+            {
+                try
+                {
+                    if (Encyclopedia.i == null) return;
+
+                    foreach (var def in Encyclopedia.i.aircraft)
+                    {
+                        if (def == null) continue;
+                        if (def.name.IndexOf(TargetAircraftName, StringComparison.OrdinalIgnoreCase) < 0) continue;
+
+                        var wm = def.unitPrefab?.GetComponentInChildren<WeaponManager>();
+                        if (wm?.hardpointSets == null) continue;
+
+                        if (MpBlocker.MpBlocker.IsMultiplayer())
+                        {
+                            // Strip the dorsal mount in MP so the server doesn't reject the spawn
+                            var list = new System.Collections.Generic.List<HardpointSet>(wm.hardpointSets);
+                            int removed = list.RemoveAll(hs => hs?.name == "Dorsal Mount");
+                            if (removed > 0)
+                            {
+                                wm.hardpointSets = list.ToArray();
+                                Log.LogInfo("[GrowlerFrit] MP — stripped Dorsal Mount hardpoint set.");
+                            }
+                        }
+                        else
+                        {
+                            // Re-add the dorsal mount in singleplayer if it was previously stripped
+                            bool exists = false;
+                            foreach (var hs in wm.hardpointSets)
+                                if (hs?.name == "Dorsal Mount") { exists = true; break; }
+
+                            if (!exists && SparkyDome.dorsalHardpointSet != null)
+                            {
+                                var list = new System.Collections.Generic.List<HardpointSet>(wm.hardpointSets);
+                                list.Add(SparkyDome.dorsalHardpointSet);
+                                wm.hardpointSets = list.ToArray();
+                                Log.LogInfo("[GrowlerFrit] SP — re-added Dorsal Mount hardpoint set.");
+                            }
+                        }
+                    }
+                }
+                catch (Exception e) { Log.LogError("SceneLoadPatch failed: " + e); }
             }
         }
     }
