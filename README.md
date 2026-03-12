@@ -24,5 +24,9 @@ And lastly, a new radome mount is attached to the center of the fuselage to allo
 3. Check the LogOutput.Log file to see if it has loaded correctly.
 4. Jam Jam Jam.
 
+# Known Issues: 
+- When using QOL mod, the radome is shrunk leading to a model mismatch and the smaller radome slamming down onto the Ifrit, possibly snapping it in two.
+  - Fix: Dont use QOL with the mod at the moment until I fix that issue.
+
 # Notes 
 If there are any issues with the mod, please contact me on discord (@spinypine) with a copy of your LogOutput.Log file.
