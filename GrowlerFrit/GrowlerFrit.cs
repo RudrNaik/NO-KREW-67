@@ -6,6 +6,7 @@ using NuclearOption.SavedMission;
 using System;
 using System.Reflection;
 using UnityEngine;
+using static GrowlerFrit.SparkyDome;
 
 namespace GrowlerFrit
 {
@@ -31,7 +32,14 @@ namespace GrowlerFrit
                 "Multiplayer",
                 "MultiplayerMode",
                 MpBlocker.MultiplayerMode.MpDisabled,
-                "MpDisabled: mod only active in singleplayer. RestrictedMM: mod active in MP with version matching."
+                "Handles the version string and MpBlocker to allow you to play with others. MpDisabled: mod only active in singleplayer. RestrictedMM: mod active in MP with version matching."
+            );
+
+            SparkyDome.isQol = Config.Bind(
+                "isQol",
+                "Installed",
+                QoLInstall.Inactive,
+                "Handles positioning of the radome when using with QOL from Primeva 2082. Active, Qol from primeva 2082 is active; Inactive, Qol from Primeva 2082 is inactive."
             );
 
             MpBlocker.MpBlocker.SetEnum(MpMode.Value);

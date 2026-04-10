@@ -27,15 +27,29 @@ namespace GrowlerFrit
         internal static float y = 0.6f;
         internal static float z = -3.0f;
 
+        internal static float QoLx = 0f;
+        internal static float QoLy = 0.65f;
+        internal static float QoLz = -8.0f;
+
         // Local position and rotation of the radome hardpoint relative to fuselage_F, uses x y and z from above.
         private static readonly Vector3 RadomeLocalPos = new Vector3(x, y, z);
         private static readonly Quaternion RadomeLocalRot = Quaternion.Euler(0f, 180f, 0f);
 
+        private static readonly Vector3 QoLLocalPos = new Vector3(QoLx, QoLy, QoLz);
+        private static readonly Quaternion QoLLocalRot = Quaternion.Euler(0f, 0f, 180f);
+        private static readonly Vector3 QoLLocalTransform = new Vector3(2f, 2f, 2f);
+
+        public static ConfigEntry<QoLInstall> isQol;
 
         internal static WeaponMount clonedMount = null;
 
         internal static HardpointSet dorsalHardpointSet = null;
 
+        internal enum QoLInstall
+        {
+            Active,     // Qol is active.
+            Inactive    // QoL is inactive.
+        }
 
         private void Awake()
         {
@@ -177,9 +191,19 @@ namespace GrowlerFrit
                     // Create dorsal hardpoint transform
                     var hardpointGO = new GameObject("hardpoint_dorsal_radome");
                     hardpointGO.transform.SetParent(fuselageF, worldPositionStays: false);
-                    hardpointGO.transform.localPosition = RadomeLocalPos;
-                    hardpointGO.transform.localRotation = RadomeLocalRot;
-                    hardpointGO.hideFlags = HideFlags.HideAndDontSave;
+
+
+                    if (isQol.Value.Equals(QoLInstall.Active))
+                    {
+                        hardpointGO.transform.localScale = QoLLocalTransform;
+                        hardpointGO.transform.localPosition = QoLLocalPos;
+                        hardpointGO.transform.localRotation = QoLLocalRot;
+                    } else
+                    {
+                        hardpointGO.transform.localPosition = RadomeLocalPos;
+                        hardpointGO.transform.localRotation = RadomeLocalRot;
+                        hardpointGO.hideFlags = HideFlags.HideAndDontSave;
+                    }
 
                     var hardpoint = new Hardpoint
                     {
