@@ -39,17 +39,11 @@ namespace GrowlerFrit
         private static readonly Quaternion QoLLocalRot = Quaternion.Euler(0f, 0f, 180f);
         private static readonly Vector3 QoLLocalTransform = new Vector3(2f, 2f, 2f);
 
-        public static ConfigEntry<QoLInstall> isQol;
+        public static ConfigEntry<GrowlerFrit.QoLInstall> isQol;
 
         internal static WeaponMount clonedMount = null;
 
         internal static HardpointSet dorsalHardpointSet = null;
-
-        internal enum QoLInstall
-        {
-            Active,     // Qol is active.
-            Inactive    // QoL is inactive.
-        }
 
         private void Awake()
         {
@@ -193,7 +187,7 @@ namespace GrowlerFrit
                     hardpointGO.transform.SetParent(fuselageF, worldPositionStays: false);
 
 
-                    if (isQol.Value.Equals(QoLInstall.Active))
+                    if (isQol.Value.Equals(GrowlerFrit.QoLInstall.Active))
                     {
                         hardpointGO.transform.localScale = QoLLocalTransform;
                         hardpointGO.transform.localPosition = QoLLocalPos;

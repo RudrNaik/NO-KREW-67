@@ -19,6 +19,12 @@ namespace GrowlerFrit
     {
         internal static ManualLogSource Log;
         internal static ConfigEntry<MpBlocker.MultiplayerMode> MpMode;
+        public enum QoLInstall
+        {
+            Active,     // Qol is active.
+            Inactive    // QoL is inactive.
+        }
+
 
         private const string TargetAircraftName = "Multirole1";
         private const string AradDoubleKey = "ARM1_double";
