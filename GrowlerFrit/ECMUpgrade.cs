@@ -165,13 +165,13 @@ namespace GrowlerFrit
         /// </summary>
         public class VetLoadoutBoostPatch
         {
-            public static void Postfix(AircraftDefinition definition, Loadout loadout)
+            public static void Postfix(AircraftDefinition definition, Loadout requestedLoadout)
             {
                 try
                 {
-                    if (loadout?.weapons == null || loadout.weapons.Count <= 3) return;
+                    if (requestedLoadout?.weapons == null || requestedLoadout.weapons.Count <= 3) return;
 
-                    WeaponMount selected = loadout.weapons[3];
+                    WeaponMount selected = requestedLoadout.weapons[3];
                     bool hasECMPlus = selected != null && selected.jsonKey == NewWeaponMountKey;
 
                     if (!hasECMPlus)
