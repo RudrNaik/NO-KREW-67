@@ -137,9 +137,10 @@ namespace GrowlerFrit
         /// </summary>
         /// <param name="wm"></param>
         /// <param name="enc"> The Encyclopedia Singleton</param>
-        internal static void InjectIntoWeaponManager(WeaponManager wm, Encyclopedia enc)
+        internal static void InjectIntoWeaponManager(WeaponManager wm, Encyclopedia enc, AircraftDefinition def)
         {
             if (MpBlocker.MpBlocker.IsMultiplayer()) return;
+            if (!IsTargetAircraft(def)) return;
 
             if (wm == null || wm.hardpointSets == null || wm.hardpointSets.Length < 6) return;
 
@@ -183,12 +184,19 @@ namespace GrowlerFrit
         /// </summary>
         public class WeaponSelectorPopulatePatch
         {
-            public static void Prefix(HardpointSet hardpointSet)
+            public static void Prefix(WeaponSelector __instance, HardpointSet hardpointSet)
             {
                 try
                 {
+                    var aircraftField = typeof(WeaponSelector).GetField("aircraft", BindingFlags.Instance | BindingFlags.NonPublic);
+
+                    var aircraft = aircraftField?.GetValue(__instance) as Aircraft;
+                    var def = aircraft?.definition;
+
+                    if (!IsTargetAircraft(def)) return;
                     if (MpBlocker.MpBlocker.IsMultiplayer()) return;
                     if (Encyclopedia.i == null) return;
+                    
 
                     var pod = JammerPod2.newWeaponMount;
                     var aradDouble = FindMount(Encyclopedia.i, AradDoubleKey);
@@ -220,13 +228,12 @@ namespace GrowlerFrit
             {
                 try
                 {
-                    if (!IsTargetAircraft(definition)) return;
                     if (MpBlocker.MpBlocker.IsMultiplayer()) return;
 
                     var wm = definition.unitPrefab?.GetComponentInChildren<WeaponManager>();
                     if (wm == null) return;
 
-                    InjectIntoWeaponManager(wm, Encyclopedia.i);
+                    InjectIntoWeaponManager(wm, Encyclopedia.i, definition);
                     Log.LogInfo("VetLoadout: injected pod into prefab for spawn validation.");
                 }
                 catch (Exception e) { Log.LogError("VetLoadoutPatch failed: " + e); }
