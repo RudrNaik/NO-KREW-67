@@ -25,8 +25,8 @@ And lastly, a new radome mount is attached to the center of the fuselage to allo
 4. Jam Jam Jam.
 
 # Known Issues: 
-- When using QOL mod, the radome is shrunk leading to a model mismatch and the smaller radome slamming down onto the Ifrit, possibly snapping it in two.
-  - Fix: Dont use QOL with the mod at the moment until I fix that issue.
+- When using QOL, the mini jammer pods go missing.
+  - As of now, the radome works, still, so its still semi-compatible with QOL.
 
 # Notes 
 If there are any issues with the mod, please contact me on discord (@spinypine) with a copy of your LogOutput.Log file.
